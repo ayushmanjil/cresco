@@ -188,31 +188,32 @@ const GlobalStyle = () => (
     }
     .island-pill {
       pointer-events: auto;
-      background: #000000;
-      color: #7AE2FF;
+      background: var(--ink);
+      color: var(--canvas);
       border-radius: 999px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 6px 7px 6px 8px;
-      box-shadow: 0 16px 36px -6px rgba(0,0,0,0.65), 0 4px 12px rgba(0,0,0,0.4);
-      border: 1.5px solid rgba(255,255,255,0.12);
+      gap: 14px;
+      padding: 5px 6px 5px 6px;
+      box-shadow: 0 16px 36px -6px rgba(15,42,29,0.55), 0 4px 12px rgba(15,42,29,0.3);
+      border: 1.5px solid rgba(227,238,212,0.18);
       cursor: pointer;
-      transition: transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
-      min-width: 215px;
+      transition: all .25s cubic-bezier(.2,.8,.3,1);
+      min-width: 220px;
       user-select: none;
       -webkit-user-select: none;
     }
     .island-pill:hover {
       transform: scale(1.02);
-      box-shadow: 0 20px 42px -6px rgba(0,0,0,0.75), 0 6px 16px rgba(0,0,0,0.5);
+      border-color: var(--mid);
+      box-shadow: 0 20px 42px -6px rgba(15,42,29,0.65), 0 6px 16px rgba(15,42,29,0.4);
     }
     .island-pill:active { transform: scale(0.98); }
     .island-time {
       font-family: 'Outfit', 'Space Grotesk', sans-serif;
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 800;
-      color: #7AE2FF;
+      color: var(--canvas);
       letter-spacing: -0.02em;
       line-height: 1;
       font-variant-numeric: tabular-nums;
@@ -220,24 +221,64 @@ const GlobalStyle = () => (
       text-align: center;
     }
     .island-btn {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: #15242D;
+      background: rgba(227,238,212,0.12);
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: #7AE2FF;
+      color: var(--canvas);
       transition: background .15s ease, transform .12s ease;
       flex-shrink: 0;
     }
     .island-btn:hover {
-      background: #1C3340;
+      background: var(--mid);
+      color: var(--ink);
       transform: scale(1.08);
     }
     .island-btn:active { transform: scale(0.92); }
+
+    /* Expanded Dynamic Island Card */
+    .island-expanded {
+      pointer-events: auto;
+      background: var(--ink);
+      color: var(--canvas);
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 20px;
+      box-shadow: 0 24px 50px -8px rgba(15,42,29,0.65), 0 8px 20px rgba(15,42,29,0.4);
+      border: 1.5px solid rgba(227,238,212,0.22);
+      cursor: pointer;
+      width: 320px;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: all .25s cubic-bezier(.2,.8,.3,1);
+    }
+    .island-ctrl-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(227,238,212,0.12);
+      border: 1px solid rgba(227,238,212,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--canvas);
+      transition: background .15s ease, transform .12s ease;
+    }
+    .island-ctrl-btn:hover {
+      background: var(--mid);
+      color: var(--ink);
+      transform: scale(1.1);
+    }
+    .island-ctrl-btn:active { transform: scale(0.94); }
 
     .progress-ring-bg { stroke: var(--surface-2); }
     .bar-track { background: var(--surface-2); border-radius: 999px; overflow: hidden; }
@@ -989,119 +1030,195 @@ function PageRouter({ page }) {
 }
 
 /* ============================== DYNAMIC ISLAND TIMER ============================== */
-function MascotTimerIcon({ size = 38, pct = 65, running = true }) {
-  const r = 16;
-  const c = 2 * Math.PI * r;
-  const offset = c - (Math.min(Math.max(pct, 0), 100) / 100) * c;
-
-  return (
-    <div style={{
-      width: size,
-      height: size,
-      position: "relative",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0
-    }}>
-      <svg width={size} height={size} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Stopwatch Top Crown Buttons */}
-        <rect x="20" y="1.5" width="4" height="2.5" rx="1.2" fill="#1C3845" />
-        <rect x="18" y="0.5" width="8" height="1.8" rx="0.9" fill="#7AE2FF" />
-        <rect x="32.5" y="4.5" width="3.5" height="2" rx="1" transform="rotate(35 32.5 4.5)" fill="#7AE2FF" />
-
-        {/* Outer Dark Ring Track */}
-        <circle cx="22" cy="24" r={r} stroke="#1A3B4A" strokeWidth="3" />
-
-        {/* Outer Progress Arc */}
-        <circle
-          cx="22" cy="24" r={r}
-          stroke="#7AE2FF"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          transform="rotate(-90 22 24)"
-          style={{ transition: "stroke-dashoffset 0.4s ease" }}
-        />
-
-        {/* Face Inner Cyan Circle */}
-        <circle cx="22" cy="24" r="13.8" fill="#7AE2FF" />
-
-        {/* Stopwatch Clock Hand / Slanted Eyebrow */}
-        <path d="M22 23.5 L28.5 20" stroke="#0B1A24" strokeWidth="2.4" strokeLinecap="round" />
-
-        {/* Left Eye (Sparkle Cartoon Eye) */}
-        <ellipse cx="16" cy="23.5" rx="2.5" ry="3" fill="#0B1A24" />
-        <circle cx="15.2" cy="22.3" r="1" fill="#FFFFFF" />
-        <circle cx="16.8" cy="24.5" r="0.5" fill="#FFFFFF" />
-
-        {/* Right Eye (Sparkle Cartoon Eye) */}
-        <ellipse cx="27" cy="24.5" rx="2.5" ry="3" fill="#0B1A24" />
-        <circle cx="26.2" cy="23.3" r="1" fill="#FFFFFF" />
-        <circle cx="27.8" cy="25.5" r="0.5" fill="#FFFFFF" />
-
-        {/* Cute Blushing Cheeks */}
-        <ellipse cx="13" cy="26" rx="1.8" ry="1.2" fill="#FF79C6" opacity="0.65" />
-        <ellipse cx="30" cy="27" rx="1.8" ry="1.2" fill="#FF79C6" opacity="0.65" />
-
-        {/* Cute Smile */}
-        <path d="M20 26.5 Q22 28.8 24 26.5" stroke="#0B1A24" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      </svg>
-    </div>
-  );
-}
-
 function TimerIsland() {
-  const { timer, setTimer, setPage } = useApp();
+  const { timer, setTimer, resetTimer, setPage } = useApp();
+  const [expanded, setExpanded] = useState(false);
+
   const display = timer.mode === "timer" ? Math.max(timer.durationSec - timer.elapsed, 0) : timer.elapsed;
   const pct = timer.mode === "timer"
-    ? Math.round(((timer.durationSec - timer.elapsed) / timer.durationSec) * 100)
-    : Math.round((timer.elapsed % 3600) / 36);
+    ? Math.min(100, Math.max(0, Math.round(((timer.durationSec - timer.elapsed) / timer.durationSec) * 100)))
+    : Math.min(100, Math.round(((timer.elapsed % 3600) / 3600) * 100));
 
-  // Format mm:ss (e.g. 5:24) matching the screenshot
-  const formatIslandTime = (sec) => {
+  const formatDigits = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
+    return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
   return (
     <div className="island-wrap">
-      <div
-        className="island-pill"
-        onClick={() => setPage("focus")}
-        title="Click to open Focus Workspace"
-      >
-        {/* Left Mascot Icon with animated progress arc */}
-        <MascotTimerIcon size={38} pct={pct} running={timer.running} />
-
-        {/* Center Digital Countdown */}
-        <div className="island-time">
-          {formatIslandTime(display)}
-        </div>
-
-        {/* Right Play/Pause Button */}
-        <button
-          className="island-btn"
-          onClick={(e) => {
+      {expanded ? (
+        /* EXPANDED ISLAND (Second screenshot style with gauge, top status, and control buttons) */
+        <div
+          className="island-expanded pop"
+          onClick={() => setExpanded(false)}
+          onDoubleClick={(e) => {
             e.stopPropagation();
-            setTimer(t => ({ ...t, running: !t.running }));
+            setPage("focus");
           }}
-          title={timer.running ? "Pause timer" : "Resume timer"}
+          title="Click to collapse · Double click to open Focus Page"
         >
-          {timer.running ? (
-            <svg width="14" height="15" viewBox="0 0 14 15" fill="none">
-              <rect x="2.5" y="1" width="3.2" height="13" rx="1.6" fill="#7AE2FF" />
-              <rect x="8.3" y="1" width="3.2" height="13" rx="1.6" fill="#7AE2FF" />
+          {/* Top Row: Brand & Status */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{
+                width: 26, height: 26, borderRadius: 7,
+                background: "rgba(227,238,212,0.12)",
+                display: "flex", alignItems: "center", justifyContent: "center"
+              }}>
+                <CrescoLogo size={16} variant="raw" />
+              </div>
+              <span style={{ fontWeight: 800, fontSize: 13.5, color: "var(--canvas)", letterSpacing: "-0.01em" }}>
+                {timer.mode === "timer" ? "Focus Timer" : "Study Stopwatch"}
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%",
+                background: timer.running ? "var(--mid)" : "rgba(227,238,212,0.35)",
+                animation: timer.running ? "pulse 1.4s infinite" : "none"
+              }} />
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--canvas)", opacity: 0.85 }}>
+                {timer.mode === "timer" ? `${Math.round(timer.durationSec / 60)}m` : "Active"}
+              </span>
+            </div>
+          </div>
+
+          {/* Center Arc Gauge + Live Digits */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", margin: "6px 0 2px" }}>
+            <svg width="154" height="88" viewBox="0 0 154 88" fill="none">
+              {/* Background Arc */}
+              <path
+                d="M 22 84 A 55 55 0 0 1 132 84"
+                stroke="rgba(227,238,212,0.15)"
+                strokeWidth="7.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Active Progress Arc in Theme Mid Color */}
+              <path
+                d="M 22 84 A 55 55 0 0 1 132 84"
+                stroke="var(--mid)"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray="172"
+                strokeDashoffset={172 * (1 - pct / 100)}
+                fill="none"
+                style={{ transition: "stroke-dashoffset 0.4s ease" }}
+              />
             </svg>
-          ) : (
-            <svg width="14" height="15" viewBox="0 0 14 15" fill="none">
-              <path d="M3 2 L12 7.5 L3 13 Z" fill="#7AE2FF" />
-            </svg>
-          )}
-        </button>
-      </div>
+
+            {/* Inner Digits inside Gauge */}
+            <div style={{
+              position: "absolute",
+              top: 26,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "var(--canvas)", opacity: 0.65, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                {timer.mode === "timer" ? "Time Left" : "Elapsed"}
+              </span>
+              <span className="disp" style={{
+                fontSize: 27,
+                fontWeight: 800,
+                color: "var(--canvas)",
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+                fontVariantNumeric: "tabular-nums"
+              }}>
+                {formatDigits(display)}
+              </span>
+              <span style={{ fontSize: 10.5, color: "var(--mid)", fontWeight: 700, marginTop: 1 }}>
+                {timer.running ? "Deep Focus" : "Paused"}
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Action Controls */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 14px", marginTop: 4 }}>
+            {/* Reset / Stop button */}
+            <button
+              className="island-ctrl-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                resetTimer();
+              }}
+              title="Reset timer"
+            >
+              <Square size={14} fill="var(--canvas)" color="var(--canvas)" />
+            </button>
+
+            {/* Hint */}
+            <span style={{ fontSize: 10, color: "var(--canvas)", opacity: 0.45 }}>
+              Double-click for full page
+            </span>
+
+            {/* Pause / Resume button */}
+            <button
+              className="island-ctrl-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setTimer(t => ({ ...t, running: !t.running }));
+              }}
+              title={timer.running ? "Pause" : "Resume"}
+            >
+              {timer.running ? (
+                <Pause size={15} fill="var(--canvas)" color="var(--canvas)" />
+              ) : (
+                <Play size={15} fill="var(--canvas)" color="var(--canvas)" style={{ marginLeft: 2 }} />
+              )}
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* COMPACT ISLAND (First screenshot style with Sapling logo, timer, and quick pause) */
+        <div
+          className="island-pill"
+          onClick={() => setExpanded(true)}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            setPage("focus");
+          }}
+          title="Click to expand · Double click to open Focus Page"
+        >
+          {/* Left: Cresco Sapling Logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 7, paddingLeft: 4 }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: 8,
+              background: "rgba(227,238,212,0.12)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0
+            }}>
+              <CrescoLogo size={18} variant="raw" />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 12.5, color: "var(--canvas)", letterSpacing: "-0.01em" }}>
+              {timer.mode === "timer" ? "Focus" : "Stopwatch"}
+            </span>
+          </div>
+
+          {/* Center Digital Countdown in theme canvas color */}
+          <div className="island-time">
+            {formatDigits(display)}
+          </div>
+
+          {/* Right Play/Pause Button */}
+          <button
+            className="island-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setTimer(t => ({ ...t, running: !t.running }));
+            }}
+            title={timer.running ? "Pause timer" : "Resume timer"}
+          >
+            {timer.running ? (
+              <Pause size={13} fill="var(--canvas)" color="var(--canvas)" />
+            ) : (
+              <Play size={13} fill="var(--canvas)" color="var(--canvas)" style={{ marginLeft: 1 }} />
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
