@@ -3577,11 +3577,30 @@ function AdminDashboardPage() {
 function AdminUsersPage() {
   const { users, setUsers } = useApp();
   const [showCreate, setShowCreate] = useState(false);
-  function createUser() {
-    if (!form.username.trim() || !form.password.trim()) return;
+  const [viewing, setViewing] = useState(null);
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
+  const [createError, setCreateError] = useState("");
+
+  function createUser(e) {
+    if (e) e.preventDefault();
+    setCreateError("");
+    const trimmedUser = form.username.trim();
+    const trimmedPass = form.password.trim();
+    const trimmedName = form.name.trim() || trimmedUser;
+    const trimmedEmail = form.email.trim() || `${trimmedUser}@cresco.com`;
+
+    if (!trimmedUser || !trimmedPass) {
+      setCreateError("Username and initial password are required.");
+      return;
+    }
+    if (users.some(u => (u.profile?.username || "").toLowerCase() === trimmedUser.toLowerCase())) {
+      setCreateError("A student with this username already exists.");
+      return;
+    }
+
     const u = seedUser({
-      profile: { name: form.name || form.username, email: `${form.username.trim()}@cresco.com`, phone: "", username: form.username.trim() },
-      password: form.password.trim(),
+      profile: { name: trimmedName, email: trimmedEmail, phone: "", username: trimmedUser },
+      password: trimmedPass,
       sharing: false,
       subjects: [],
       tests: [],
@@ -3589,9 +3608,11 @@ function AdminUsersPage() {
       focusSessions: [],
       studyLogs: {}
     });
+
     setUsers(prev => [...prev, u]);
     saveUserToFirestore(u);
-    setForm({ name: "", username: "", password: "" });
+    setForm({ name: "", username: "", email: "", password: "" });
+    setCreateError("");
     setShowCreate(false);
   }
 
@@ -3607,22 +3628,66 @@ function AdminUsersPage() {
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-        <button className="btn-primary" onClick={() => setShowCreate(v => !v)}><Plus size={16} />New user</button>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <span className="label" style={{ marginBottom: 2 }}>Directory</span>
+          <h2 style={{ margin: 0, fontSize: 18 }}>Registered Student Accounts ({users.length})</h2>
+        </div>
+        <button className="btn-primary" onClick={() => { setShowCreate(v => !v); setCreateError(""); }}>
+          <Plus size={16} /> Add Student Account
+        </button>
       </div>
 
       {showCreate && (
-        <div className="card pop" style={{ padding: 18, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 10 }}>
-          <div><span className="label">Full name</span><input className="field" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
-          <div><span className="label">Username*</span><input className="field" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /></div>
-          <div><span className="label">Initial password*</span><input className="field" type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} /></div>
-          <div style={{ display: "flex", alignItems: "end", gap: 8 }}>
-            <button className="btn-primary" onClick={createUser}>Create</button>
+        <div className="card pop" style={{ padding: "20px 22px", display: "grid", gap: 14 }}>
+          <div>
+            <h3 style={{ margin: "0 0 4px", fontSize: 16 }}>Provision New Student Account</h3>
+            <p style={{ margin: 0, fontSize: 12.5, color: "var(--deep)", opacity: 0.65 }}>
+              Create an account for a student. They can immediately log in using these credentials.
+            </p>
+          </div>
+
+          {createError && (
+            <div style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              fontSize: 12.5,
+              fontWeight: 600,
+              background: "rgba(181,101,79,0.14)",
+              color: "#8F3A26",
+              border: "1px solid rgba(181,101,79,0.25)",
+              display: "flex",
+              alignItems: "center",
+              gap: 6
+            }}>
+              <X size={14} />
+              <span>{createError}</span>
+            </div>
+          )}
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+            <div>
+              <span className="label">Full Name</span>
+              <input className="field" placeholder="e.g. Maya Sharma" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div>
+              <span className="label">Username*</span>
+              <input className="field" placeholder="e.g. maya.sharma" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} />
+            </div>
+            <div>
+              <span className="label">Email Address</span>
+              <input className="field" type="email" placeholder="e.g. maya@cresco.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div>
+              <span className="label">Initial Password*</span>
+              <input className="field" type="password" placeholder="Enter temporary password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+            <button className="btn-primary" onClick={createUser}>Save & Provision</button>
             <button className="btn-ghost" onClick={() => setShowCreate(false)}>Cancel</button>
           </div>
-          <p style={{ gridColumn: "1/-1", fontSize: 11.5, color: "var(--deep)", opacity: 0.65, margin: 0 }}>
-            Credentials are provisioned via Firebase Authentication — never stored as plaintext in Firestore.
-          </p>
         </div>
       )}
 
