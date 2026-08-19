@@ -1084,59 +1084,59 @@ function TimerIsland() {
             </div>
           </div>
 
-          {/* Center Arc Gauge + Live Digits */}
-          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", margin: "6px 0 2px" }}>
-            <svg width="154" height="88" viewBox="0 0 154 88" fill="none">
+          {/* Center Arc Gauge + Live Digits (Cleanly spaced, zero overlap) */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 180, height: 104, margin: "4px 0 2px" }}>
+            <svg width="180" height="104" viewBox="0 0 180 104" fill="none">
               {/* Background Arc */}
               <path
-                d="M 22 84 A 55 55 0 0 1 132 84"
-                stroke="rgba(227,238,212,0.15)"
-                strokeWidth="7.5"
+                d="M 22 96 A 68 68 0 0 1 158 96"
+                stroke="rgba(227,238,212,0.14)"
+                strokeWidth="7"
                 strokeLinecap="round"
                 fill="none"
               />
               {/* Active Progress Arc in Theme Mid Color */}
               <path
-                d="M 22 84 A 55 55 0 0 1 132 84"
+                d="M 22 96 A 68 68 0 0 1 158 96"
                 stroke="var(--mid)"
-                strokeWidth="8"
+                strokeWidth="7.5"
                 strokeLinecap="round"
-                strokeDasharray="172"
-                strokeDashoffset={172 * (1 - pct / 100)}
+                strokeDasharray="213.6"
+                strokeDashoffset={213.6 * (1 - pct / 100)}
                 fill="none"
                 style={{ transition: "stroke-dashoffset 0.4s ease" }}
               />
             </svg>
 
-            {/* Inner Digits inside Gauge */}
+            {/* Inner Digits inside Gauge with safe vertical clearance */}
             <div style={{
               position: "absolute",
-              top: 26,
+              top: 34,
               display: "flex",
               flexDirection: "column",
               alignItems: "center"
             }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: "var(--canvas)", opacity: 0.65, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--canvas)", opacity: 0.65, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 2 }}>
                 {timer.mode === "timer" ? "Time Left" : "Elapsed"}
               </span>
               <span className="disp" style={{
-                fontSize: 27,
+                fontSize: 29,
                 fontWeight: 800,
                 color: "var(--canvas)",
                 letterSpacing: "-0.02em",
-                lineHeight: 1.1,
+                lineHeight: 1,
                 fontVariantNumeric: "tabular-nums"
               }}>
                 {formatDigits(display)}
               </span>
-              <span style={{ fontSize: 10.5, color: "var(--mid)", fontWeight: 700, marginTop: 1 }}>
+              <span style={{ fontSize: 11, color: "var(--mid)", fontWeight: 700, marginTop: 4 }}>
                 {timer.running ? "Deep Focus" : "Paused"}
               </span>
             </div>
           </div>
 
           {/* Bottom Action Controls */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 14px", marginTop: 4 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "0 12px", marginTop: 8 }}>
             {/* Reset / Stop button */}
             <button
               className="island-ctrl-btn"
@@ -1150,7 +1150,7 @@ function TimerIsland() {
             </button>
 
             {/* Hint */}
-            <span style={{ fontSize: 10, color: "var(--canvas)", opacity: 0.45 }}>
+            <span style={{ fontSize: 10.5, color: "var(--canvas)", opacity: 0.45 }}>
               Double-click for full page
             </span>
 
