@@ -180,16 +180,64 @@ const GlobalStyle = () => (
     .dock-item span { font-size: 13px; font-weight: 600; max-width: 0; overflow: hidden; opacity: 0; transition: max-width .25s ease, opacity .2s ease; }
     .dock-item.active span { max-width: 120px; opacity: 1; margin-left: 1px; }
 
-    /* Timer Island */
-    .island-wrap { position: fixed; top: 14px; left: 0; right: 0; display: flex; justify-content: center; z-index: 50; pointer-events: none; }
-    .island {
-      pointer-events: auto;
-      background: var(--ink); color: var(--canvas);
-      border-radius: 999px; display: flex; align-items: center; gap: 12px;
-      padding: 8px 8px 8px 18px; box-shadow: 0 12px 30px -8px rgba(15,42,29,0.5);
-      cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.3,1);
+    /* Dynamic Island Timer */
+    .island-wrap {
+      position: fixed; top: 16px; left: 0; right: 0;
+      display: flex; justify-content: center;
+      z-index: 100; pointer-events: none;
     }
-    .island:active { transform: scale(0.98); }
+    .island-pill {
+      pointer-events: auto;
+      background: #000000;
+      color: #7AE2FF;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 6px 7px 6px 8px;
+      box-shadow: 0 16px 36px -6px rgba(0,0,0,0.65), 0 4px 12px rgba(0,0,0,0.4);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease;
+      min-width: 215px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .island-pill:hover {
+      transform: scale(1.02);
+      box-shadow: 0 20px 42px -6px rgba(0,0,0,0.75), 0 6px 16px rgba(0,0,0,0.5);
+    }
+    .island-pill:active { transform: scale(0.98); }
+    .island-time {
+      font-family: 'Outfit', 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #7AE2FF;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      flex: 1;
+      text-align: center;
+    }
+    .island-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #15242D;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #7AE2FF;
+      transition: background .15s ease, transform .12s ease;
+      flex-shrink: 0;
+    }
+    .island-btn:hover {
+      background: #1C3340;
+      transform: scale(1.08);
+    }
+    .island-btn:active { transform: scale(0.92); }
 
     .progress-ring-bg { stroke: var(--surface-2); }
     .bar-track { background: var(--surface-2); border-radius: 999px; overflow: hidden; }
@@ -940,39 +988,120 @@ function PageRouter({ page }) {
   }
 }
 
-/* ============================== TIMER ISLAND ============================== */
+/* ============================== DYNAMIC ISLAND TIMER ============================== */
+function MascotTimerIcon({ size = 38, pct = 65, running = true }) {
+  const r = 16;
+  const c = 2 * Math.PI * r;
+  const offset = c - (Math.min(Math.max(pct, 0), 100) / 100) * c;
+
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }}>
+      <svg width={size} height={size} viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Stopwatch Top Crown Buttons */}
+        <rect x="20" y="1.5" width="4" height="2.5" rx="1.2" fill="#1C3845" />
+        <rect x="18" y="0.5" width="8" height="1.8" rx="0.9" fill="#7AE2FF" />
+        <rect x="32.5" y="4.5" width="3.5" height="2" rx="1" transform="rotate(35 32.5 4.5)" fill="#7AE2FF" />
+
+        {/* Outer Dark Ring Track */}
+        <circle cx="22" cy="24" r={r} stroke="#1A3B4A" strokeWidth="3" />
+
+        {/* Outer Progress Arc */}
+        <circle
+          cx="22" cy="24" r={r}
+          stroke="#7AE2FF"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          transform="rotate(-90 22 24)"
+          style={{ transition: "stroke-dashoffset 0.4s ease" }}
+        />
+
+        {/* Face Inner Cyan Circle */}
+        <circle cx="22" cy="24" r="13.8" fill="#7AE2FF" />
+
+        {/* Stopwatch Clock Hand / Slanted Eyebrow */}
+        <path d="M22 23.5 L28.5 20" stroke="#0B1A24" strokeWidth="2.4" strokeLinecap="round" />
+
+        {/* Left Eye (Sparkle Cartoon Eye) */}
+        <ellipse cx="16" cy="23.5" rx="2.5" ry="3" fill="#0B1A24" />
+        <circle cx="15.2" cy="22.3" r="1" fill="#FFFFFF" />
+        <circle cx="16.8" cy="24.5" r="0.5" fill="#FFFFFF" />
+
+        {/* Right Eye (Sparkle Cartoon Eye) */}
+        <ellipse cx="27" cy="24.5" rx="2.5" ry="3" fill="#0B1A24" />
+        <circle cx="26.2" cy="23.3" r="1" fill="#FFFFFF" />
+        <circle cx="27.8" cy="25.5" r="0.5" fill="#FFFFFF" />
+
+        {/* Cute Blushing Cheeks */}
+        <ellipse cx="13" cy="26" rx="1.8" ry="1.2" fill="#FF79C6" opacity="0.65" />
+        <ellipse cx="30" cy="27" rx="1.8" ry="1.2" fill="#FF79C6" opacity="0.65" />
+
+        {/* Cute Smile */}
+        <path d="M20 26.5 Q22 28.8 24 26.5" stroke="#0B1A24" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      </svg>
+    </div>
+  );
+}
+
 function TimerIsland() {
-  const { timer, setTimer, resetTimer, setPage } = useApp();
-  const [expanded, setExpanded] = useState(false);
+  const { timer, setTimer, setPage } = useApp();
   const display = timer.mode === "timer" ? Math.max(timer.durationSec - timer.elapsed, 0) : timer.elapsed;
+  const pct = timer.mode === "timer"
+    ? Math.round(((timer.durationSec - timer.elapsed) / timer.durationSec) * 100)
+    : Math.round((timer.elapsed % 3600) / 36);
+
+  // Format mm:ss (e.g. 5:24) matching the screenshot
+  const formatIslandTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
 
   return (
     <div className="island-wrap">
       <div
-        className="island"
-        onClick={() => setExpanded(e => !e)}
-        onDoubleClick={() => setPage("focus")}
-        style={{ padding: expanded ? "10px 14px" : "8px 8px 8px 18px" }}
+        className="island-pill"
+        onClick={() => setPage("focus")}
+        title="Click to open Focus Workspace"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ width: 7, height: 7, borderRadius: 999, background: timer.running ? "#8FD18F" : "var(--line)", animation: timer.running ? "pulse 1.4s infinite" : "none" }} />
-          <span className="disp" style={{ fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: 15 }}>{fmtTime(display)}</span>
-          {expanded && <span style={{ fontSize: 11, opacity: 0.65, marginLeft: 2 }}>{timer.mode === "timer" ? "left" : "elapsed"}</span>}
+        {/* Left Mascot Icon with animated progress arc */}
+        <MascotTimerIcon size={38} pct={pct} running={timer.running} />
+
+        {/* Center Digital Countdown */}
+        <div className="island-time">
+          {formatIslandTime(display)}
         </div>
-        {expanded && (
-          <div style={{ display: "flex", gap: 6 }}>
-            <button className="btn-icon" style={{ width: 30, height: 30, background: "var(--deep)", border: "none", color: "var(--canvas)" }}
-              onClick={(e) => { e.stopPropagation(); setTimer(t => ({ ...t, running: !t.running })); }}>
-              {timer.running ? <Pause size={14} /> : <Play size={14} />}
-            </button>
-            <button className="btn-icon" style={{ width: 30, height: 30, background: "var(--deep)", border: "none", color: "var(--canvas)" }}
-              onClick={(e) => { e.stopPropagation(); resetTimer(); }}>
-              <Square size={13} />
-            </button>
-          </div>
-        )}
+
+        {/* Right Play/Pause Button */}
+        <button
+          className="island-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setTimer(t => ({ ...t, running: !t.running }));
+          }}
+          title={timer.running ? "Pause timer" : "Resume timer"}
+        >
+          {timer.running ? (
+            <svg width="14" height="15" viewBox="0 0 14 15" fill="none">
+              <rect x="2.5" y="1" width="3.2" height="13" rx="1.6" fill="#7AE2FF" />
+              <rect x="8.3" y="1" width="3.2" height="13" rx="1.6" fill="#7AE2FF" />
+            </svg>
+          ) : (
+            <svg width="14" height="15" viewBox="0 0 14 15" fill="none">
+              <path d="M3 2 L12 7.5 L3 13 Z" fill="#7AE2FF" />
+            </svg>
+          )}
+        </button>
       </div>
-      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }`}</style>
     </div>
   );
 }
