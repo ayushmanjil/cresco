@@ -1084,12 +1084,12 @@ function TimerIsland() {
             </div>
           </div>
 
-          {/* Center Arc Gauge + Live Digits (Cleanly spaced, zero overlap) */}
-          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 180, height: 104, margin: "4px 0 2px" }}>
-            <svg width="180" height="104" viewBox="0 0 180 104" fill="none">
-              {/* Background Arc */}
+          {/* Center High-Arc Dome Gauge + Live Digits (Zero overlap, apex sits high above text) */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 200, height: 136, margin: "2px 0 0" }}>
+            <svg width="200" height="136" viewBox="0 0 200 136" fill="none">
+              {/* Background Full Track Arch */}
               <path
-                d="M 22 96 A 68 68 0 0 1 158 96"
+                d="M 44 116 A 64 64 0 1 1 156 116"
                 stroke="rgba(227,238,212,0.14)"
                 strokeWidth="7"
                 strokeLinecap="round"
@@ -1097,39 +1097,39 @@ function TimerIsland() {
               />
               {/* Active Progress Arc in Theme Mid Color */}
               <path
-                d="M 22 96 A 68 68 0 0 1 158 96"
+                d="M 44 116 A 64 64 0 1 1 156 116"
                 stroke="var(--mid)"
                 strokeWidth="7.5"
                 strokeLinecap="round"
-                strokeDasharray="213.6"
-                strokeDashoffset={213.6 * (1 - pct / 100)}
+                strokeDasharray="279.2"
+                strokeDashoffset={279.2 * (1 - pct / 100)}
                 fill="none"
                 style={{ transition: "stroke-dashoffset 0.4s ease" }}
               />
             </svg>
 
-            {/* Inner Digits inside Gauge with safe vertical clearance */}
+            {/* Inner Digits inside Dome with 30px top clearance */}
             <div style={{
               position: "absolute",
-              top: 34,
+              top: 36,
               display: "flex",
               flexDirection: "column",
               alignItems: "center"
             }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--canvas)", opacity: 0.65, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 2 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--canvas)", opacity: 0.65, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 2 }}>
                 {timer.mode === "timer" ? "Time Left" : "Elapsed"}
               </span>
               <span className="disp" style={{
-                fontSize: 29,
+                fontSize: 32,
                 fontWeight: 800,
                 color: "var(--canvas)",
                 letterSpacing: "-0.02em",
-                lineHeight: 1,
+                lineHeight: 1.05,
                 fontVariantNumeric: "tabular-nums"
               }}>
                 {formatDigits(display)}
               </span>
-              <span style={{ fontSize: 11, color: "var(--mid)", fontWeight: 700, marginTop: 4 }}>
+              <span style={{ fontSize: 11.5, color: "var(--mid)", fontWeight: 700, marginTop: 5 }}>
                 {timer.running ? "Deep Focus" : "Paused"}
               </span>
             </div>
